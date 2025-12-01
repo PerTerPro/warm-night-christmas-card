@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="robots" content="index,follow,all,max-image-preview:large"/>
-    <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+    <link href="./favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 
     <title>Warm Night Christmas Card</title>
 
@@ -22,7 +22,7 @@
 
             navigator.serviceWorker.register('swf-sw.js').then(() => {
                 navigator.serviceWorker.ready.then(() => {
-                    if(sessionStorage.getItem('sw-reloaded')) {
+                    if (sessionStorage.getItem('sw-reloaded')) {
                         window.RufflePlayer = window.RufflePlayer || {};
                         window.RufflePlayer.config = {
                             autoplay: 'on',
@@ -40,40 +40,25 @@
                             container.appendChild(player);
 
                             console.log('📁 Loading index.swf...');
-                            player.ruffle().load('index.swf');
+                            player.ruffle().load('index.swf').then(() => {
+                                document.getElementById('loader')?.remove();
+                            });
                         });
                     }
                 });
             });
         }
     </script>
-<!--    <script>-->
-<!--        window.RufflePlayer = window.RufflePlayer || {};-->
-<!--        window.RufflePlayer.config = {-->
-<!--            autoplay: 'on',-->
-<!--            allowFullscreen: true,-->
-<!--            splashScreen: false,-->
-<!--            unmuteOverlay: 'hidden',-->
-<!--        };-->
-
-<!--        window.addEventListener("load", (event) => {-->
-<!--            const ruffle = window.RufflePlayer.newest();-->
-<!--            const player = ruffle.createPlayer();-->
-<!--            player.style.width = "100%";-->
-<!--            player.style.height = "100%";-->
-<!--            const container = document.getElementById("container");-->
-<!--            container.appendChild(player);-->
-
-<!--            console.log("📁 Loading index.swf...");-->
-<!--            player.ruffle().load("index.swf");-->
-<!--        });-->
-<!--    </script>-->
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <style>
         body {
             margin: 0;
             padding: 0;
             /*background: #000;*/
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #container {
@@ -88,9 +73,40 @@
             max-width: 100%;
             max-height: 100%;
         }
+
+        #loader {
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 30px;
+            line-height: 1.2em;
+            display: inline-grid;
+            position: absolute;
+        }
+
+        #loader:before,
+        #loader:after {
+            content: "Loading...";
+            grid-area: 1/1;
+            -webkit-mask: linear-gradient(90deg, #000 50%, #0000 0) 0 50%/2ch 100%;
+            color: #0000;
+            text-shadow: 0 0 0 #000, 0 calc(var(--s, 1) * 1.2em) 0 #000;
+            animation: l15 1s infinite;
+        }
+
+        #loader:after {
+            -webkit-mask-position: 1ch 50%;
+            --s: -1;
+        }
+
+        @keyframes l15 {
+            80%, 100% {
+                text-shadow: 0 calc(var(--s, 1) * -1.2em) 0 #000, 0 0 0 #000
+            }
+        }
     </style>
 </head>
 <body>
 <div id="container"></div>
+<div id="loader"></div>
 </body>
 </html>
