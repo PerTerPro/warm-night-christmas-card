@@ -1,3 +1,18 @@
+self.addEventListener("install", () => {
+    self.skipWaiting(); // để activate ngay
+});
+
+self.addEventListener("activate", (event) => {
+    event.waitUntil(
+        (async () => {
+            const clients = await self.clients.matchAll({ includeUncontrolled: true });
+            for (const client of clients) {
+                client.postMessage({ type: "SW_ACTIVATED_FIRST_TIME" });
+            }
+        })()
+    );
+});
+
 self.addEventListener("fetch", event => {
     const reqUrl = new URL(event.request.url);
 

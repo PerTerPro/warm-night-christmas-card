@@ -2,33 +2,72 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Ruffle Player</title>
+    <meta name="robots" content="index,follow,all,max-image-preview:large"/>
+    <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+
+    <title>Warm Night Christmas Card</title>
+
     <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("swf-sw.js").then(async () => {
-                await navigator.serviceWorker.ready;
-                window.RufflePlayer = window.RufflePlayer || {};
-                window.RufflePlayer.config = {
-                    autoplay: 'on',
-                    allowFullscreen: true,
-                    splashScreen: false,
-                    unmuteOverlay: 'hidden',
-                };
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data?.type === 'SW_ACTIVATED_FIRST_TIME') {
+                    console.log('🔥 First SW activation, reloading...');
 
-                window.addEventListener("load", (event) => {
-                    const ruffle = window.RufflePlayer.newest();
-                    const player = ruffle.createPlayer();
-                    player.style.width = "100%";
-                    player.style.height = "100%";
-                    const container = document.getElementById("container");
-                    container.appendChild(player);
+                    if (!sessionStorage.getItem('sw-reloaded')) {
+                        sessionStorage.setItem('sw-reloaded', '1');
+                        location.reload();
+                    }
+                }
+            });
 
-                    console.log("📁 Loading index.swf...");
-                    player.ruffle().load("index.swf");
+            navigator.serviceWorker.register('swf-sw.js').then(() => {
+                navigator.serviceWorker.ready.then(() => {
+                    if(sessionStorage.getItem('sw-reloaded')) {
+                        window.RufflePlayer = window.RufflePlayer || {};
+                        window.RufflePlayer.config = {
+                            autoplay: 'on',
+                            allowFullscreen: true,
+                            splashScreen: false,
+                            unmuteOverlay: 'hidden',
+                        };
+
+                        window.addEventListener('load', (event) => {
+                            const ruffle = window.RufflePlayer.newest();
+                            const player = ruffle.createPlayer();
+                            player.style.width = '100%';
+                            player.style.height = '100%';
+                            const container = document.getElementById('container');
+                            container.appendChild(player);
+
+                            console.log('📁 Loading index.swf...');
+                            player.ruffle().load('index.swf');
+                        });
+                    }
                 });
             });
         }
     </script>
+<!--    <script>-->
+<!--        window.RufflePlayer = window.RufflePlayer || {};-->
+<!--        window.RufflePlayer.config = {-->
+<!--            autoplay: 'on',-->
+<!--            allowFullscreen: true,-->
+<!--            splashScreen: false,-->
+<!--            unmuteOverlay: 'hidden',-->
+<!--        };-->
+
+<!--        window.addEventListener("load", (event) => {-->
+<!--            const ruffle = window.RufflePlayer.newest();-->
+<!--            const player = ruffle.createPlayer();-->
+<!--            player.style.width = "100%";-->
+<!--            player.style.height = "100%";-->
+<!--            const container = document.getElementById("container");-->
+<!--            container.appendChild(player);-->
+
+<!--            console.log("📁 Loading index.swf...");-->
+<!--            player.ruffle().load("index.swf");-->
+<!--        });-->
+<!--    </script>-->
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <style>
         body {
