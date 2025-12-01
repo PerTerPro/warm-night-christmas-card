@@ -8,6 +8,18 @@
     <title>Warm Night Christmas Card</title>
 
     <script>
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        function hasWebGL2() {
+            try {
+                return !!document.createElement("canvas").getContext("webgl2");
+            } catch {
+                return false;
+            }
+        }
+
+        let preferredRenderer = hasWebGL2() ? 'wgpu-webgl' : 'webgl';
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
                 if (event.data?.type === 'SW_ACTIVATED_FIRST_TIME') {
@@ -29,6 +41,8 @@
                             allowFullscreen: true,
                             splashScreen: false,
                             unmuteOverlay: 'hidden',
+                            preferredRenderer: preferredRenderer,
+                            quality: isMobile ? 'medium' : 'high'
                         };
 
                         window.addEventListener('load', (event) => {
