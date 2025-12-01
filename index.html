@@ -20,7 +20,7 @@
                 }
             });
 
-            navigator.serviceWorker.register('swf-sw.js').then(() => {
+            navigator.serviceWorker.register("swf-sw.js?v=" + Date.now()).then(() => {
                 navigator.serviceWorker.ready.then(() => {
                     if (sessionStorage.getItem('sw-reloaded')) {
                         window.RufflePlayer = window.RufflePlayer || {};
