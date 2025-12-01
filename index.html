@@ -21,45 +21,40 @@
         let preferredRenderer = hasWebGL2() ? 'wgpu-webgl' : 'webgl';
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', (event) => {
-                if (event.data?.type === 'SW_ACTIVATED_FIRST_TIME') {
-                    console.log('🔥 First SW activation, reloading...');
+            navigator.serviceWorker.register("swf-sw.js").then((reg) => {
+                if (reg.installing) {
+                    const sw = reg.installing || reg.waiting;
+                    sw.onstatechange = function () {
+                        if (sw.state === 'installed') {
+                            // SW installed.  Refresh page so SW can respond with SW-enabled page.
+                            window.location.reload();
+                        }
+                    };
+                } else if (reg.active) {
+                    window.RufflePlayer = window.RufflePlayer || {};
+                    window.RufflePlayer.config = {
+                        autoplay: 'on',
+                        allowFullscreen: true,
+                        splashScreen: false,
+                        unmuteOverlay: 'hidden',
+                        preferredRenderer: preferredRenderer,
+                        quality: isMobile ? 'medium' : 'high'
+                    };
 
-                    if (!sessionStorage.getItem('sw-reloaded')) {
-                        sessionStorage.setItem('sw-reloaded', '1');
-                        location.reload();
-                    }
-                }
-            });
+                    window.addEventListener('load', (event) => {
+                        const ruffle = window.RufflePlayer.newest();
+                        const player = ruffle.createPlayer();
+                        player.style.width = '100%';
+                        player.style.height = '100%';
+                        const container = document.getElementById('container');
+                        container.appendChild(player);
 
-            navigator.serviceWorker.register("swf-sw.js?v=" + Date.now()).then(() => {
-                navigator.serviceWorker.ready.then(() => {
-                    if (sessionStorage.getItem('sw-reloaded')) {
-                        window.RufflePlayer = window.RufflePlayer || {};
-                        window.RufflePlayer.config = {
-                            autoplay: 'on',
-                            allowFullscreen: true,
-                            splashScreen: false,
-                            unmuteOverlay: 'hidden',
-                            preferredRenderer: preferredRenderer,
-                            quality: isMobile ? 'medium' : 'high'
-                        };
-
-                        window.addEventListener('load', (event) => {
-                            const ruffle = window.RufflePlayer.newest();
-                            const player = ruffle.createPlayer();
-                            player.style.width = '100%';
-                            player.style.height = '100%';
-                            const container = document.getElementById('container');
-                            container.appendChild(player);
-
-                            console.log('📁 Loading index.swf...');
-                            player.ruffle().load('index.swf').then(() => {
-                                document.getElementById('loader')?.remove();
-                            });
+                        console.log('📁 Loading index.swf...');
+                        player.ruffle().load('index.swf').then(() => {
+                            document.getElementById('loader')?.remove();
                         });
-                    }
-                });
+                    });
+                }
             });
         }
     </script>
